@@ -35,6 +35,25 @@ $ chmod +x init.sh && ./init.sh
 
 
 
+## Data Splitter
+
+데이터를 레이블 별로 uniform하기 나눈 후 각 Client에 scp로 전송해줍니다. 전송된 파일은 `/tmp/data.pt`에 직렬화 됩니다.
+
+- `n_label` : 데이터 레이블 갯수를 나타냅니다.
+- `key_path` : private ssh key 절대경로 입니다.
+- `saved_dir` : splitted된 데이터가 저장될 위치입니다.
+- `n_data` : 각 client가 한 레이블당 갖고 있는 데이터의 갯수입니다. 
+
+```shell
+$ python data_splitter.py \
+		--n_label 10 \
+		--key_path '/home/ssh.pem' \
+		--saved_dir './data/' \
+		--n_data 16
+```
+
+
+
 ## Client Restart
 
 ```shell
