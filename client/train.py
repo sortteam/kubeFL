@@ -64,7 +64,9 @@ def main(args):
         download(url=args.web_model, file_name=args.model)
 
     model = Net()
-    optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+    optimizer = optim.SGD(model.parameters(),
+                          lr=args.lr,
+                          momentum=args.momentum)
     model.load_state_dict(torch.load(args.model))
     print(model)
 
@@ -91,9 +93,9 @@ if __name__ == '__main__':
                 default='https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt')
     parser.add_argument('--model', help='downloaded init model', default='/tmp/init_model.pt')
     parser.add_argument('--data_path', help='train data', default='/tmp/data.pt')
-    parser.add_argument('--lr', help='learning rate', default=0.01)
-    parser.add_argument('--momentum', help='momentum', default=0.5)
-    parser.add_argument('--epoch', help='number of epoch', default=50)
+    parser.add_argument('--lr', help='learning rate', default=0.01, type=float)
+    parser.add_argument('--momentum', help='momentum', default=0.5, type=float)
+    parser.add_argument('--epoch', help='number of epoch', default=50, type=int)
     known_args, _ = parser.parse_known_args()
     print(known_args)
     main(args=known_args)
