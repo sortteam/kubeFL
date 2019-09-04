@@ -17,4 +17,14 @@ resource "aws_instance" "client" {
     tags = {
         type = "client"
     }
+
+    provisioner "remote-exec" {
+    inline = [
+        "sudo apt update",
+        "sudo apt install -y python3",
+        "sudo pip3 install --upgrade ${var.TORCH_BINARY_URL}",
+        "sudo pip3 install --upgrade ${var.TORCHVISION_BINARY_URL}",
+        "mkdir /tmp/data",
+    ]
+  }
 }
