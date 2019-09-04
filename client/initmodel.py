@@ -89,8 +89,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--init_model', help='init_model',
                 default='https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt')
-    parser.add_argument('--model_path', help='downloaded init model', default='./data/init_model.pt')
-    parser.add_argument('--data_path', help='train data', default='/tmp/model.pt')
+    parser.add_argument('--model_path', help='downloaded init model', default='/tmp/init_model.pt')
+    parser.add_argument('--data_path', help='train data', default='/tmp/data.pt')
     parser.add_argument('--lr', help='learning rate', default=0.01)
     parser.add_argument('--momentum', help='momentum', default=0.5)
     parser.add_argument('--epoch', help='number of epoch', default=50)
