@@ -4,6 +4,7 @@
 import os
 import copy
 import torch
+import requests
 import torch.utils.data
 import torch.nn as nn
 import torch.nn.functional as F
@@ -69,11 +70,13 @@ def train(model, train_loader, optimizer, epochs):
                         loss.item(), correct/len(data) * 100))
 
 
-    # TODO Save model in local file system with tagging
     model_tag = str(socket.gethostname()) + '-' + str(datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3])
-    cal_delta_weight(prev_model, model)
-    torch.save(model.state_dict(), os.path.join('./models', model_tag) + '.pt')
-    # TODO send model to worker aggregator
+    model = cal_delta_weight(prev_model, model)
+    filename = os.path.join('./models', model_tag) + '.pt'
+    torch.save(model, filename)
+    print(filename, 'saved!')
+
+    return filename
 
 def main(args):
     # Load Model
@@ -96,7 +99,15 @@ def main(args):
                                                    batch_size=64,
                                                    shuffle=True,)
 
-        train(model, train_loader, optimizer, args.epoch)
+        filename = train(model, train_loader, optimizer, args.epoch)
+
+        # TODO send model to worker aggregator
+        try:
+            with open(filename, 'rb') as f:
+                r = requests.post(args.FL_server, files={'file': f})
+                print(r.text)
+        except:
+            print('FL Server is not connected!!')
 
 
 if __name__ == '__main__':
@@ -113,6 +124,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', help='learning rate', default=0.01, type=float)
     parser.add_argument('--momentum', help='momentum', default=0.5, type=float)
     parser.add_argument('--epoch', help='number of epoch', default=50, type=int)
+    parser.add_argument('--FL_server', help='FL_server ip address', default='http://15.164.78.19:5000/upload', type=str)
     known_args, _ = parser.parse_known_args()
     print(known_args)
     main(args=known_args)
