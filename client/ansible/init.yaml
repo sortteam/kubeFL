@@ -2,7 +2,6 @@
   become: true
   vars:
     TORCH_BINARY_URL: "https://download.pytorch.org/whl/cpu/torch-1.1.0-cp35-cp35m-linux_x86_64.whl"
-    TORCHVISION_BINARY_URL: "https://download.pytorch.org/whl/cpu/torchvision-0.3.0-cp35-cp35m-linux_x86_64.whl"
 
   tasks:
     - name: swap off and install pytorch, torchvision
@@ -19,4 +18,3 @@
         - "apt install -y python3"
         - "apt install -y python3-pip"
         - "pip3 --no-cache-dir install {{ TORCH_BINARY_URL }}"
-        - "pip3 --no-cache-dir install {{ TORCHVISION_BINARY_URL }}"
