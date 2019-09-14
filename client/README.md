@@ -26,7 +26,8 @@ $ chmod +x ping.sh && ./ping.sh
 ## Client init
 
 - apt 업데이트와 pip3 설치
-- pytorch=1.1.0과 torchvision=0.3.0 설치
+- ubuntu swap memory 1G로 제한
+- pytorch=1.1.0 설치
 
 ```shell
 $ cd ../ansible
@@ -52,7 +53,15 @@ $ python data_splitter.py \
 		--n_data 16
 ```
 
-
+## Client Training
+Client를 Training 시키기 전에 아래 3가지가 끝나야합니다.
+1. Client Provisioning
+2. Client init
+3. Data Splitting
+그 후에 다음과 같은 명령어로 ansible에서 train.py 스크립트를 각 Client에 실행합니다.
+```shell
+$ chmod +x train.sh && ./train.sh
+```
 
 ## Client Restart
 
