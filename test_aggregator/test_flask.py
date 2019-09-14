@@ -64,7 +64,8 @@ def cal_mean_weight(weight_paths):
 
     torch.save(model, args.model) # overwrite
     data = open(args.model, 'rb')
-    s3.Bucket('ywj-horovod').put_object(Key='torchmodels/model.pt', Body=data)
+    s3.Bucket('ywj-horovod').put_object(Key='torchmodels/model.pt',
+                                    Body=data, ACL='public-read')
 
     return model
 
@@ -94,8 +95,7 @@ def upload():
 
 if __name__ == '__main__':
     # Load init Model
-    if not os.path.exists(args.model):
-        download(url=args.web_model, file_name=args.model)
+    download(url=args.web_model, file_name=args.model)
 
     if not os.path.isdir('/tmp/models'):
         os.mkdir('/tmp/models')
