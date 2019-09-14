@@ -12,7 +12,7 @@ variable zone {
 }
 
 variable "number_of_worker" {
-  default = 2
+  default = 10
 }
 
 variable client_instance_type {

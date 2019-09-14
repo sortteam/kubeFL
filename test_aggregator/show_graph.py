@@ -6,17 +6,19 @@ if os.environ.get('DISPLAY','') == '':
 import matplotlib.pyplot as plt
 
 def show_loss():
+    n_device = 10
     with open("/tmp/loss.txt", 'r') as f:
         lines = f.readlines()
-        xs, y1, y2 = [], [], []
-        for line in lines:
-            arr = line.split('\t')
-            xs.append(arr[0])
-            y1.append(arr[1])
-            y2.append(arr[2])
-        plt.plot(xs, y1, label=r'device 1')
-        plt.plot(xs, y2, label=r'device 2')
-        plt.title('loss')
+        for device in range(1, n_device + 1):
+            xs, ys = [], []
+            for line in lines:
+                arr = line.split('\t')
+                xs.append(arr[0])
+                ys.append(arr[device])
+            plt.plot(xs, ys, label=r'device ' + str(device))
+            plt.title('loss')
+            plt.xlabel('round')
+            plt.ylabel('loss')
 
         plt.legend()
         plt.savefig('./loss.png')
@@ -28,14 +30,16 @@ def show_acc():
         xs, ys, = [], []
         for line in lines:
             arr = line.split('\t')
-            xs.append(arr[0])
-            ys.append(arr[1])
+            xs.append(arr[0]) # round
+            ys.append(arr[1]) # acc
         plt.plot(xs, ys, label=r'acc')
         plt.title('acc')
+        plt.xlabel('round')
+        plt.ylabel('acc')
 
         plt.legend()
         plt.savefig('./acc.png')
         plt.show()
 
 # show_loss()
-show_acc()
+# show_acc()
