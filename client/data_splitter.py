@@ -40,7 +40,8 @@ def dataload_unittest(file_path):
 def main(args):
     public_dns = get_public_dns(region_name='ap-northeast-2',
                                 tag='type', value=['client'])
-    public_dns.remove('')
+    if '' in public_dns:
+        public_dns.remove('')
     num_instances = len(public_dns)
 
     transform = transforms.Compose([transforms.ToTensor(),
@@ -61,6 +62,7 @@ def main(args):
                             user='ubuntu',
                             connect_kwargs={"key_filename": args.key_path}
                             ) as c:
+                print(public_dns[k] + ' Data Send!')
                 c.put(file_path, '/tmp/data.pt')
 
 if __name__ == '__main__':
