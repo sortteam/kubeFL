@@ -16,7 +16,11 @@ variable "number_of_worker" {
 }
 
 variable client_instance_type {
-  default = "t2.micro"
+  default = "t2.small"
+}
+
+variable "volume_size" {
+  default = 15
 }
 
 variable client_subnet {
@@ -47,13 +51,4 @@ variable amis {
     us-west-1 = "ami-6e165d0e"
     us-west-2 = "ami-a9d276c9"
   }
-}
-
-# Pytorch Version
-variable "TORCH_BINARY_URL" {
-  default = "https://download.pytorch.org/whl/cpu/torch-1.1.0-cp35-cp35m-linux_x86_64.whl"
-}
-
-variable "TORCHVISION_BINARY_URL" {
-  default = "https://download.pytorch.org/whl/cpu/torchvision-0.3.0-cp35-cp35m-linux_x86_64.whl"
 }

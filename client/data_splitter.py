@@ -40,6 +40,7 @@ def dataload_unittest(file_path):
 def main(args):
     public_dns = get_public_dns(region_name='ap-northeast-2',
                                 tag='type', value=['client'])
+    public_dns.remove('')
     num_instances = len(public_dns)
 
     transform = transforms.Compose([transforms.ToTensor(),
@@ -60,12 +61,12 @@ def main(args):
                             user='ubuntu',
                             connect_kwargs={"key_filename": args.key_path}
                             ) as c:
-                c.put(file_path, '/tmp/data')
+                c.put(file_path, '/tmp/data.pt')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--n_label', help='number of label', default=10)
-    parser.add_argument('--key_path', help='private key path', default='')
+    parser.add_argument('--key_path', help='private key path')
     parser.add_argument('--saved_dir', help='saved data folder', default='./data/')
     parser.add_argument('--n_data', default=32,
                         help='number of data in one label which will send to clients')

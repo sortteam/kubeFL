@@ -1,0 +1,18 @@
+- hosts: all
+  vars:
+    train_script: "https://gist.githubusercontent.com/graykode/164e3239097b54f46a5b3162547910e0/raw/28f09d45e9d0592d350b2c796833d5a9b1985d2c/train.py"
+    web_model : "https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt"
+    model : "/tmp/init_model.pt"
+    epoch : 50
+
+  tasks:
+    - name: delete before train.py
+      shell: "rm /tmp/train.py"
+
+    - name: download init mnodel
+      get_url:
+        url: "{{ train_script }}"
+        dest: "/tmp/train.py"
+
+    - name: train pytorch model
+      shell: python3 /tmp/train.py --web_model {{ web_model }} --model {{ model }} --epoch {{ epoch | int }} > /tmp/log.txt
