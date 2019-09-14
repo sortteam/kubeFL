@@ -23,6 +23,7 @@ print(args)
 
 threshold = args.threshold
 updates = []
+total_loss = []
 
 def download(url, file_name):
     with open(file_name, "wb") as file:
@@ -74,6 +75,7 @@ def upload():
     if request.method == 'POST':
         f = request.files.get('file')
         n_round = request.form['round']
+        loss = request.form['loss']
         fname = secure_filename(f.filename)
         print(fname)
         f.save(os.path.join('/tmp/models', fname))
@@ -81,13 +83,20 @@ def upload():
         global updates
         updates.append(fname)
 
+        global total_loss
+        total_loss.append(loss)
+
         if len(updates) >= threshold:
             new_weight = cal_mean_weight(updates)
 
             # This line for save temporary
             torch.save(new_weight, os.path.join('/tmp', str(n_round) + '.pt'))
+            print(total_loss)
+            with open("/tmp/loss.txt", "a") as f:
+                f.write(str(n_round) + ''.join('\t'+l for l in total_loss) + '\n')
 
             updates = []
+            total_loss = []
             # Test for show loss, acc with number of Round
             print('Round', n_round, 'Updated!!')
 
