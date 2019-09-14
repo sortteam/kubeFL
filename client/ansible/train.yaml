@@ -2,7 +2,7 @@
   vars:
     web_model : "https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt"
     model : "/tmp/init_model.pt"
-    epoch : 50
+    epoch : 10
 
   tasks:
     - name: delete before train.py
@@ -16,4 +16,4 @@
         owner: ubuntu
 
     - name: train pytorch model
-      shell: python3 /tmp/train.py --web_model {{ web_model }} --model {{ model }} --epoch {{ epoch | int }} > /tmp/log.txt
+      shell: python3 /tmp/train.py --web_model {{ web_model }} --model {{ model }} --epoch {{ epoch | int }} --round {{ round | int }} > /tmp/log.txt
