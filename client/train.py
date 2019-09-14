@@ -4,6 +4,7 @@
 import os
 import copy
 import torch
+import subprocess
 import requests
 import torch.utils.data
 import torch.nn as nn
@@ -11,7 +12,6 @@ import torch.nn.functional as F
 import torch.optim as optim
 import argparse
 import socket
-import numpy as np
 from datetime import datetime
 from requests import get  # to make GET request
 
@@ -34,6 +34,10 @@ class Net(nn.Module):
         return F.log_softmax(x, dim=1)
 
 def download(url, file_name):
+    # Idempotency
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
     with open(file_name, "wb") as file:
         response = get(url)
         file.write(response.content)
@@ -79,9 +83,8 @@ def train(model, train_loader, optimizer, epochs):
     return filename
 
 def main(args):
-    # Load Model
-    if not os.path.exists(args.model):
-        download(url=args.web_model, file_name=args.model)
+    # Load init Model
+    download(url=args.web_model, file_name=args.model)
 
     model = Net()
     optimizer = optim.SGD(model.parameters(),
@@ -101,29 +104,30 @@ def main(args):
 
         filename = train(model, train_loader, optimizer, args.epoch)
 
-        # TODO send model to worker aggregator
         try:
             with open(filename, 'rb') as f:
-                r = requests.post(args.FL_server, files={'file': f})
+                r = requests.post(args.FL_server, files={'file': f},
+                                  data={'round' : args.round})
                 print(r.text)
         except:
             print('FL Server is not connected!!')
 
 
 if __name__ == '__main__':
-    try:
+    # Idempotency > remove all local models when start
+    if os.path.isdir('./models'):
+        subprocess.run(['rm', '-rf', './models'])
         os.mkdir('./models')
-    except:
-        pass
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--web_model', help='init_model',
                 default='https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt')
-    parser.add_argument('--model', help='downloaded init model', default='/tmp/init_model.pt')
+    parser.add_argument('--model', help='path which will be downloaded', default='/tmp/init_model.pt')
     parser.add_argument('--data_path', help='train data', default='/tmp/data.pt')
     parser.add_argument('--lr', help='learning rate', default=0.01, type=float)
     parser.add_argument('--momentum', help='momentum', default=0.5, type=float)
     parser.add_argument('--epoch', help='number of epoch', default=50, type=int)
+    parser.add_argument('--round', help='number of round', type=int)
     parser.add_argument('--FL_server', help='FL_server ip address', default='http://15.164.78.19:5000/upload', type=str)
     known_args, _ = parser.parse_known_args()
     print(known_args)
