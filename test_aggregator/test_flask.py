@@ -5,8 +5,10 @@ import copy
 from flask import Flask, request
 from werkzeug import secure_filename
 import argparse
-import subprocess
+import boto3
+
 from requests import get  # to make GET request
+s3 = boto3.resource('s3')
 
 app = Flask(__name__)
 
@@ -56,14 +58,14 @@ def cal_mean_weight(weight_paths):
         # W_t = W_(t-1) + n * H
         model[layer_k] += pre_model[layer_k]
 
-    subprocess.run(['rm', '-rf', '/tmp/models'])
-
     # Remove before weight
     if os.path.isfile(args.model):
         os.remove(args.model)
 
-    # TODO Upload model S3
-    # TODO Download from S3
+    torch.save(model, args.model) # overwrite
+    data = open(args.model, 'rb')
+    s3.Bucket('ywj-horovod').put_object(Key='torchmodels/model.pt', Body=data)
+
     return model
 
 @app.route('/upload', methods=['POST'])
@@ -72,6 +74,7 @@ def upload():
         f = request.files.get('file')
         n_round = request.form['round']
         fname = secure_filename(f.filename)
+        print(fname)
         f.save(os.path.join('/tmp/models', fname))
 
         global updates
@@ -80,10 +83,12 @@ def upload():
         if len(updates) >= threshold:
             new_weight = cal_mean_weight(updates)
 
+            # This line for save temporary
+            torch.save(new_weight, os.path.join('/tmp', str(n_round) + '.pt'))
+
+            updates = []
             # Test for show loss, acc with number of Round
             print('Round', n_round, 'Updated!!')
-            torch.save(new_weight, os.path.join('/tmp', str(n_round) + '.pt'))
-            updates = []
 
         return 'success'
 

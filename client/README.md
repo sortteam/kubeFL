@@ -60,7 +60,8 @@ Client를 Training 시키기 전에 아래 3가지가 끝나야합니다.
 3. Data Splitting
 그 후에 다음과 같은 명령어로 ansible에서 train.py 스크립트를 각 Client에 실행합니다.
 ```shell
-$ chmod +x train.sh && ./train.sh
+$ chmod +x train.sh
+$ ./train.sh [round number(int)]
 ```
 
 ## Client Restart
