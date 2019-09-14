@@ -2,6 +2,7 @@
     init model unit test
 """
 import os
+import copy
 import torch
 import torch.utils.data
 import torch.nn as nn
@@ -9,6 +10,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import argparse
 import socket
+import numpy as np
 from datetime import datetime
 from requests import get  # to make GET request
 
@@ -35,7 +37,21 @@ def download(url, file_name):
         response = get(url)
         file.write(response.content)
 
+def cal_delta_weight(prev_model, new_model):
+    weights = [dict(prev_model.state_dict()),
+               dict(new_model.state_dict())]
+    model = dict(prev_model.named_parameters())
+
+    for layer_k, layer_v in model.items():
+        # if use mean calculate
+        # mean = torch.mean(torch.stack([weight[layer_k] for weight in weights]), dim=0)
+        delta = weights[1][layer_k] - weights[0][layer_k]
+        model[layer_k].data.copy_(delta)
+    return model
+
 def train(model, train_loader, optimizer, epochs):
+    prev_model = copy.deepcopy(model)
+
     model.train()
     for epoch in range(epochs):
         for batch_idx, (data, target) in enumerate(train_loader):
@@ -55,6 +71,7 @@ def train(model, train_loader, optimizer, epochs):
 
     # TODO Save model in local file system with tagging
     model_tag = str(socket.gethostname()) + '-' + str(datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3])
+    cal_delta_weight(prev_model, model)
     torch.save(model.state_dict(), os.path.join('./models', model_tag) + '.pt')
     # TODO send model to worker aggregator
 
