@@ -2,6 +2,7 @@
     init model unit test
 """
 import os
+import sys
 import copy
 import torch
 import subprocess
@@ -76,6 +77,7 @@ def train(model, train_loader, optimizer, epochs):
 
     model_tag = str(socket.gethostname()) + '-' + str(datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3])
     model = cal_delta_weight(prev_model, model)
+
     filename = os.path.join('./models', model_tag) + '.pt'
     torch.save(model, filename)
     print(filename, 'saved!')
@@ -117,7 +119,7 @@ if __name__ == '__main__':
     # Idempotency > remove all local models when start
     if os.path.isdir('./models'):
         subprocess.run(['rm', '-rf', './models'])
-        os.mkdir('./models')
+    os.mkdir('./models')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--web_model', help='init_model',
@@ -131,4 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('--FL_server', help='FL_server ip address', default='http://15.164.78.19:5000/upload', type=str)
     known_args, _ = parser.parse_known_args()
     print(known_args)
+
+    if not os.path.exists(known_args.data_path):
+        sys.stderr.write('DATA NOT LOADED!!!')
     main(args=known_args)
