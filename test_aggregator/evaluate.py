@@ -23,6 +23,9 @@ class Net(nn.Module):
         return F.log_softmax(x, dim=1)
 
 if __name__ == '__main__':
+    if os.path.exists('/tmp/acc.txt'):
+        os.remove('/tmp/acc.txt')
+
     transform = transforms.Compose([transforms.ToTensor(),
                                     transforms.Normalize((0.1307,), (0.3081,))])
 

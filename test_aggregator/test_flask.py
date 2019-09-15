@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os, re
 import torch
 import copy
 from flask import Flask, request
@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--web_model', help='init_model',
                 default='https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt')
 parser.add_argument('--model', help='path which will be downloaded', default='/tmp/init_model.pt')
-parser.add_argument("--threshold", type=int, default=2)
+parser.add_argument("--threshold", type=int, default=10)
 parser.add_argument("--lr", type=float, default=1.0)
 args = parser.parse_args()
 print(args)
@@ -102,11 +102,20 @@ def upload():
 
         return 'success'
 
+def purge(dir="/tmp"):
+    for f in os.listdir(dir):
+        if '.pt' in f:
+            os.remove(os.path.join(dir, f))
+
 if __name__ == '__main__':
+    purge()
     # Load init Model
     download(url=args.web_model, file_name=args.model)
 
     if not os.path.isdir('/tmp/models'):
         os.mkdir('/tmp/models')
+
+    if os.path.exists('/tmp/loss.txt'):
+        os.remove('/tmp/loss.txt')
 
     app.run(host='0.0.0.0', debug=False)
