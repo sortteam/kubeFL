@@ -38,10 +38,15 @@ def dataload_unittest(file_path):
     print(len(data[0]))
 
 def main(args):
+    s3 = boto3.resource('s3')
+    data = open(args.init_model, 'rb')
+    s3.Bucket('ywj-horovod').put_object(Key='torchmodels/model.pt',
+                                        Body=data, ACL='public-read')
+
     public_dns = get_public_dns(region_name='ap-northeast-2',
                                 tag='type', value=['client'])
-    if '' in public_dns:
-        public_dns.remove('')
+    public_dns = [v for v in public_dns if v != '']
+    print(public_dns)
     num_instances = len(public_dns)
 
     transform = transforms.Compose([transforms.ToTensor(),
@@ -70,6 +75,7 @@ if __name__ == '__main__':
     parser.add_argument('--n_label', help='number of label', default=10)
     parser.add_argument('--key_path', help='private key path')
     parser.add_argument('--saved_dir', help='saved data folder', default='./data/')
+    parser.add_argument('--init_model', help='init model to upload s3', default='/Users/graykode/Downloads/model.pt')
     parser.add_argument('--n_data', default=32,
                         help='number of data in one label which will send to clients')
     known_args, _ = parser.parse_known_args()
