@@ -128,7 +128,7 @@ if __name__ == '__main__':
     parser.add_argument('--momentum', help='momentum', default=0.5, type=float)
     parser.add_argument('--epoch', help='number of epoch', default=50, type=int)
     parser.add_argument('--round', help='number of round', type=int)
-    parser.add_argument('--FL_server', help='FL_server ip address', default='http://15.164.78.19:5000/upload', type=str)
+    parser.add_argument('--FL_server', help='FL_server ip address', type=str, required=True)
     known_args, _ = parser.parse_known_args()
     print(known_args)
     main(args=known_args)
