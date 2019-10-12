@@ -4,10 +4,10 @@ if [ "$#" -lt 1 ]; then
     exit 1
 fi
 args=("$@")
-echo 'Round' $1 ' Epoch' $2
+echo 'Round' $1 $2
 
 ansible-playbook -i ./inventory/ec2.py \
       --limit "tag_type_client" \
       -u ubuntu \
       --private-key ~/.ssh/SoRT.pem train.yaml \
-      --extra-vars "round=$1 epoch=$2" -vvvv
+      --extra-vars "round=$1 server=$2" -vvvv

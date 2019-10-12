@@ -1,0 +1,27 @@
+- hosts: all
+  become: true
+  vars:
+    master : "http://15.164.78.19:5000/upload"
+    threshold : 1
+
+  tasks:
+    - name: init
+      command: "{{ item }}"
+      with_items:
+        - "apt update"
+        - "apt install -y python3"
+        - "apt install -y python3-pip"
+        - "pip3 install flask"
+
+    - name: delete before train.py
+      shell: "rm /tmp/worker.py"
+      ignore_errors: True
+
+    - name: copy python script
+      copy:
+        src: "../worker.py"
+        dest: "/tmp/worker.py"
+        owner: ubuntu
+
+    - name: start worker aggregator flask server
+      shell: python3 /tmp/worker.py --threshold {{ threshold | int }} --master {{ master }} > /tmp/log.txt

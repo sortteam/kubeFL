@@ -15,4 +15,4 @@
         owner: ubuntu
 
     - name: train pytorch model
-      shell: python3 /tmp/train.py --web_model {{ web_model }} --model {{ model }} --epoch {{ epoch | int }} --round {{ round | int }} > /tmp/log.txt
+      shell: python3 /tmp/train.py --web_model {{ web_model }} --model {{ model }} --epoch {{ epoch | int }} --round {{ round | int }} --FL_server {{ server }} > /tmp/log.txt
