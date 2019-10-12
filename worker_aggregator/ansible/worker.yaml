@@ -1,9 +1,18 @@
 - hosts: all
+  become: true
   vars:
     master : "http://15.164.78.19:5000/upload"
-    threshold : 2
+    threshold : 1
 
   tasks:
+    - name: init
+      command: "{{ item }}"
+      with_items:
+        - "apt update"
+        - "apt install -y python3"
+        - "apt install -y python3-pip"
+        - "pip3 install flask"
+
     - name: delete before train.py
       shell: "rm /tmp/worker.py"
       ignore_errors: True

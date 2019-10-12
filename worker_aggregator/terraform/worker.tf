@@ -31,7 +31,7 @@ resource "aws_elb" "worker_aggregator_elb" {
     instances = "${aws_instance.worker.*.id}"
 
     listener {
-      instance_port     = 8000
+      instance_port     = 5000
       instance_protocol = "http"
       lb_port           = 80
       lb_protocol       = "http"
@@ -41,14 +41,14 @@ resource "aws_elb" "worker_aggregator_elb" {
       healthy_threshold   = 2
       unhealthy_threshold = 2
       timeout             = 3
-      target              = "HTTP:8000/"
+      target              = "HTTP:5000/"
       interval            = 30
     }
 
     cross_zone_load_balancing   = true
-    idle_timeout                = 400
+    idle_timeout                = 100
     connection_draining         = true
-    connection_draining_timeout = 400
+    connection_draining_timeout = 100
 
     tags = {
         type = "worker"

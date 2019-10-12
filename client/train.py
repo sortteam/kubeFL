@@ -117,7 +117,7 @@ if __name__ == '__main__':
     # Idempotency > remove all local models when start
     if os.path.isdir('./models'):
         subprocess.run(['rm', '-rf', './models'])
-        os.mkdir('./models')
+    os.mkdir('./models')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--web_model', help='init_model',
@@ -130,5 +130,8 @@ if __name__ == '__main__':
     parser.add_argument('--round', help='number of round', type=int)
     parser.add_argument('--FL_server', help='FL_server ip address', type=str, required=True)
     known_args, _ = parser.parse_known_args()
+    if not os.path.exists(known_args.data_path):
+        raise Exception('init dataset not exist!!')
+
     print(known_args)
     main(args=known_args)
