@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os, re
 import torch
 import copy
 from flask import Flask, request
@@ -16,13 +16,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--web_model', help='init_model',
                 default='https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt')
 parser.add_argument('--model', help='path which will be downloaded', default='/tmp/init_model.pt')
-parser.add_argument("--threshold", type=int, default=2)
+parser.add_argument("--threshold", type=int, default=10)
 parser.add_argument("--lr", type=float, default=1.0)
 args = parser.parse_args()
 print(args)
 
 threshold = args.threshold
 updates = []
+total_loss = []
 
 def download(url, file_name):
     with open(file_name, "wb") as file:
@@ -64,7 +65,8 @@ def cal_mean_weight(weight_paths):
 
     torch.save(model, args.model) # overwrite
     data = open(args.model, 'rb')
-    s3.Bucket('ywj-horovod').put_object(Key='torchmodels/model.pt', Body=data)
+    s3.Bucket('ywj-horovod').put_object(Key='torchmodels/model.pt',
+                                    Body=data, ACL='public-read')
 
     return model
 
@@ -73,6 +75,7 @@ def upload():
     if request.method == 'POST':
         f = request.files.get('file')
         n_round = request.form['round']
+        loss = request.form['loss']
         fname = secure_filename(f.filename)
         print(fname)
         f.save(os.path.join('/tmp/models', fname))
@@ -80,24 +83,39 @@ def upload():
         global updates
         updates.append(fname)
 
+        global total_loss
+        total_loss.append(loss)
+
         if len(updates) >= threshold:
             new_weight = cal_mean_weight(updates)
 
             # This line for save temporary
             torch.save(new_weight, os.path.join('/tmp', str(n_round) + '.pt'))
+            print(total_loss)
+            with open("/tmp/loss.txt", "a") as f:
+                f.write(str(n_round) + ''.join('\t'+l for l in total_loss) + '\n')
 
             updates = []
+            total_loss = []
             # Test for show loss, acc with number of Round
             print('Round', n_round, 'Updated!!')
 
         return 'success'
 
+def purge(dir="/tmp"):
+    for f in os.listdir(dir):
+        if '.pt' in f:
+            os.remove(os.path.join(dir, f))
+
 if __name__ == '__main__':
+    purge()
     # Load init Model
-    if not os.path.exists(args.model):
-        download(url=args.web_model, file_name=args.model)
+    download(url=args.web_model, file_name=args.model)
 
     if not os.path.isdir('/tmp/models'):
         os.mkdir('/tmp/models')
 
-    app.run(host='0.0.0.0', debug=True)
+    if os.path.exists('/tmp/loss.txt'):
+        os.remove('/tmp/loss.txt')
+
+    app.run(host='0.0.0.0', debug=False)

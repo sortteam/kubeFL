@@ -2,6 +2,7 @@
     init model unit test
 """
 import os
+import sys
 import copy
 import torch
 import subprocess
@@ -56,6 +57,7 @@ def cal_delta_weight(prev_model, new_model):
 
 def train(model, train_loader, optimizer, epochs):
     prev_model = copy.deepcopy(model)
+    total_loss = 0
 
     model.train()
     for epoch in range(epochs):
@@ -68,6 +70,7 @@ def train(model, train_loader, optimizer, epochs):
 
             pred = output.argmax(dim=1, keepdim=True)
             correct = pred.eq(target.view_as(pred)).sum().item()
+            total_loss += loss.item()
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f} Acc: {:.2f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                        100. * batch_idx / len(train_loader),
@@ -76,11 +79,12 @@ def train(model, train_loader, optimizer, epochs):
 
     model_tag = str(socket.gethostname()) + '-' + str(datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3])
     model = cal_delta_weight(prev_model, model)
+
     filename = os.path.join('./models', model_tag) + '.pt'
     torch.save(model, filename)
     print(filename, 'saved!')
 
-    return filename
+    return filename, total_loss
 
 def main(args):
     # Load init Model
@@ -102,12 +106,12 @@ def main(args):
                                                    batch_size=64,
                                                    shuffle=True,)
 
-        filename = train(model, train_loader, optimizer, args.epoch)
+        filename, total_loss = train(model, train_loader, optimizer, args.epoch)
 
         try:
             with open(filename, 'rb') as f:
                 r = requests.post(args.FL_server, files={'file': f},
-                                  data={'round' : args.round})
+                                  data={'round' : args.round, 'loss' : total_loss})
                 print(r.text)
         except:
             print('FL Server is not connected!!')
@@ -134,4 +138,7 @@ if __name__ == '__main__':
         raise Exception('init dataset not exist!!')
 
     print(known_args)
+
+    if not os.path.exists(known_args.data_path):
+        sys.stderr.write('DATA NOT LOADED!!!')
     main(args=known_args)

@@ -2,7 +2,6 @@
   vars:
     web_model : "https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt"
     model : "/tmp/init_model.pt"
-    epoch : 10
 
   tasks:
     - name: delete before train.py
