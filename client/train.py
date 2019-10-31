@@ -110,6 +110,7 @@ def main(args):
 
         try:
             with open(filename, 'rb') as f:
+                # TODO : send `round` and `loss` parameter to logger server
                 r = requests.post(args.FL_server, files={'file': f},
                                   data={'round' : args.round, 'loss' : total_loss})
                 print(r.text)
@@ -127,7 +128,7 @@ if __name__ == '__main__':
     parser.add_argument('--web_model', help='init_model',
                 default='https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt')
     parser.add_argument('--model', help='path which will be downloaded', default='/tmp/init_model.pt')
-    parser.add_argument('--data_path', help='train data', default='/tmp/data.pt')
+    parser.add_argument('--data_path', help='train data in ec2 mobile client', default='/tmp/data.pt')
     parser.add_argument('--lr', help='learning rate', default=0.01, type=float)
     parser.add_argument('--momentum', help='momentum', default=0.5, type=float)
     parser.add_argument('--epoch', help='number of epoch', default=50, type=int)

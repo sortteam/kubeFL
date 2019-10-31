@@ -39,6 +39,7 @@ $ chmod +x init.sh && ./init.sh
 ## Data Splitter
 
 데이터를 레이블 별로 uniform하기 나눈 후 각 Client에 scp로 전송해줍니다. 전송된 파일은 `/tmp/data.pt`에 직렬화 됩니다.
+데이터를 스플리팅할 때, 초기모델(init model)도 S3에 배포됩니다.
 
 - `n_label` : 데이터 레이블 갯수를 나타냅니다.
 - `key_path` : private ssh key 절대경로 입니다.
@@ -57,11 +58,11 @@ $ python data_splitter.py \
 Client를 Training 시키기 전에 아래 3가지가 끝나야합니다.
 1. Client Provisioning
 2. Client init
-3. Data Splitting
+3. Data Splitting(+S3 init model upload)
 그 후에 다음과 같은 명령어로 ansible에서 train.py 스크립트를 각 Client에 실행합니다.
 ```shell
 $ chmod +x train.sh
-$ ./train.sh [round number(int)]
+$ ./train.sh [round number(int)] [server ip(str)] [number of epoch(int)]
 ```
 
 ## Client Restart
