@@ -1,5 +1,6 @@
 import os
 import torch
+import argparse
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import datasets, transforms
@@ -26,6 +27,10 @@ if __name__ == '__main__':
     if os.path.exists('/tmp/acc.txt'):
         os.remove('/tmp/acc.txt')
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--maxlen', help='max number of round', type=int, default=10)
+    args, _ = parser.parse_known_args()
+
     transform = transforms.Compose([transforms.ToTensor(),
                                     transforms.Normalize((0.1307,), (0.3081,))])
 
@@ -35,7 +40,7 @@ if __name__ == '__main__':
                                             batch_size=len(test_data), shuffle=True)
 
     model = Net()
-    maxlen = 10
+    maxlen = args.maxlen
 
     file_list = [str(i) + '.pt' for i in range(1, maxlen + 1)]
     print(file_list)
