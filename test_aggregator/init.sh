@@ -1,6 +1,3 @@
-export LC_ALL="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
-
 sudo swapoff -a
 sudo dd if=/dev/zero of=/swapfile bs=1G count=4
 sudo chmod 600 /swapfile

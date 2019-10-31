@@ -6,8 +6,11 @@
 ```shell script
 $ export AWS_ACCESS_KEY_ID=''
 $ export AWS_SECRET_ACCESS_KEY=''
+export LC_ALL="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
 
-wget https://raw.githubusercontent.com/sortteam/kubeFL/master/test_aggregator/init.sh | bash
+wget https://raw.githubusercontent.com/sortteam/kubeFL/master/test_aggregator/init.sh
+chmod +x init.sh && ./init.sh
 ```
 
 ### Logger File
