@@ -40,7 +40,7 @@ def dataload_unittest(file_path):
 def main(args):
     s3 = boto3.resource('s3')
     data = open(args.init_model, 'rb')
-    s3.Bucket('ywj-horovod').put_object(Key='torchmodels/model.pt',
+    s3.Bucket(args.bucket_name).put_object(Key=args.bucket_key,
                                         Body=data, ACL='public-read')
 
     public_dns = get_public_dns(region_name='ap-northeast-2',
@@ -73,9 +73,11 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--n_label', help='number of label', default=10)
+    parser.add_argument('--bucket_name', help='bucket name', default='ywj-horovod')
+    parser.add_argument('--bucket_key', help='bucket key', default='torchmodels/model.pt')
     parser.add_argument('--key_path', help='private key path')
     parser.add_argument('--saved_dir', help='saved data folder', default='./data/')
-    parser.add_argument('--init_model', help='init model to upload s3', default='/Users/graykode/Downloads/model.pt')
+    parser.add_argument('--init_model', help='init model to upload s3', default='./models/model.pt')
     parser.add_argument('--n_data', default=32,
                         help='number of data in one label which will send to clients')
     known_args, _ = parser.parse_known_args()
