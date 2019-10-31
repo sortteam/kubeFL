@@ -10,12 +10,8 @@ app = Flask(__name__)
 parser = argparse.ArgumentParser()
 parser.add_argument('--master', help='address of master aggregator',
                     required=True, type=str)
-parser.add_argument("--threshold", type=int, default=1)
 args = parser.parse_args()
 print(args)
-
-threshold = args.threshold
-updates = []
 
 @app.route('/')
 def index():
@@ -26,25 +22,21 @@ def upload():
     if request.method == 'POST':
         f = request.files.get('file')
         n_round = request.form['round']
+        loss = request.form['loss']
+
         fname = secure_filename(f.filename)
         print(n_round, fname)
         f.save(os.path.join('/tmp/models', fname))
 
-        global updates
-        updates.append(fname)
+        filename = os.path.join('/tmp/models', fname)
 
-        if len(updates) >= threshold:
-            try:
-                file_list = [os.path.join('/tmp/models', _name) for _name in updates]
-                files = [('file', open(file, 'rb')) for file in file_list]
-
-                r = requests.post(args.master,  files=files,
-                                  data={'count': len(files), 'round' : n_round})
-
-            except:
-                print('FL Server is not connected!!')
-
-            updates = []
+        try:
+            with open(filename, 'rb') as f:
+                r = requests.post(args.master, files={'file': f},
+                                  data={'round' : n_round, 'loss' : loss})
+                print(r.text)
+        except:
+            print('FL Server is not connected!!')
 
         return 'success'
 
