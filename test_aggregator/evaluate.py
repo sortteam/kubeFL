@@ -42,7 +42,8 @@ if __name__ == '__main__':
     model = Net()
     maxlen = args.maxlen
 
-    file_list = [str(i) + '.pt' for i in range(1, maxlen + 1)]
+    file_list = ['/tmp/init_model.pt']
+    file_list += [str(i) + '.pt' for i in range(1, maxlen + 1)]
     print(file_list)
 
     for n_round, file in enumerate(file_list):
