@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: worker-aggreator
+  labels:
+    type: worker
+    app: kubefl
+spec:
+  serviceName: "worker-service"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubefl
+      type: worker
+  template:
+    metadata:
+      labels:
+        app: kubefl
+        type: worker
+    spec:
+      containers:
+        - name: worker
+          image: graykode/worker_aggregator:0.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--master"
+            - "master-service:5000/upload"
+          ports:
+            - containerPort: 5000
+          livenessProbe:
+            httpGet:
+              port: 5000
+              path: "/"
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker-service
+  labels:
+    app: kubefl
+    type: worker
+spec:
+  type: LoadBalancer
+  selector:
+    app: kubefl
+    type: worker
+  ports:
+    - name: worker-server
+      port: 80
+      targetPort: 5000

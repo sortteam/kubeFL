@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: master-aggreator
+  labels:
+    type: master
+    app: kubefl
+spec:
+  containers:
+    - name: master-aggreator
+      image: yoowj7472/master_aggregator:0.1
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 5000
+      readinessProbe:
+        httpGet:
+          port: 5000
+          path: "/"
+      env:
+        - name: AWS_ACCESS_KEY_ID
+          value: {{AWS_ACCESS_KEY_ID}}
+        - name: AWS_SECRET_ACCESS_KEY
+          value: {{AWS_SECRET_ACCESS_KEY}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    type: master
+    app: kubefl
+  name: master-service
+spec:
+  selector:
+    type: master
+    app: kubefl
+  clusterIP: None
