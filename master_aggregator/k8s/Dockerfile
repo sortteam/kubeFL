@@ -23,5 +23,6 @@ ENV PATH /opt/conda/envs/pytorch-py35/bin:$PATH
 #RUN conda install --name pytorch-py35 -c soumith magma-cuda80 && /opt/conda/bin/conda clean -ya
 RUN conda install --name pytorch-py35 pytorch torchvision -c soumith && /opt/conda/bin/conda clean -ya
 
-COPY master.py /tmp/master.py
+RUN curl -o /tmp/master.py https://raw.githubusercontent.com/sortteam/kubeFL/master/master_aggregator/k8s/master.py && \
+     pip install -U protobuf tensorflow tensorboard
 ENTRYPOINT ["python3", "/tmp/master.py"]
