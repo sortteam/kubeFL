@@ -24,4 +24,5 @@ ENV PATH /opt/conda/envs/pytorch-py35/bin:$PATH
 RUN conda install --name pytorch-py35 pytorch torchvision -c soumith && /opt/conda/bin/conda clean -ya
 
 COPY master.py /tmp/master.py
+RUN pip install tensorboardX
 ENTRYPOINT ["python3", "/tmp/master.py"]
