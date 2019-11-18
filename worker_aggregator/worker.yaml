@@ -24,7 +24,7 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - "--master"
-            - "master-service:5000/upload"
+            - "http://master-service:5000/upload"
           ports:
             - containerPort: 5000
           livenessProbe:

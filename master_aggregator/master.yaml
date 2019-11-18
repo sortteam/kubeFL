@@ -8,8 +8,17 @@ metadata:
 spec:
   containers:
     - name: master-aggreator
-      image: yoowj7472/master_aggregator:0.1
+      image: graykode/master_aggregator:0.6
       imagePullPolicy: IfNotPresent
+      args:
+        - "--bucket_name"
+        - "ywj-horovod"
+        - "--bucket_key"
+        - "torchmodels/model.pt"
+        - "--web_model"
+        - "https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt"
+        - "--threshold"
+        - "10"
       ports:
         - containerPort: 5000
       readinessProbe:
@@ -21,6 +30,27 @@ spec:
           value: {{AWS_ACCESS_KEY_ID}}
         - name: AWS_SECRET_ACCESS_KEY
           value: {{AWS_SECRET_ACCESS_KEY}}
+      volumeMounts:
+        - mountPath: /tmp/logger
+          name: log-volume
+    - name: tensorboardx
+      image: graykode/tensorboardx:0.1
+      imagePullPolicy: IfNotPresent
+      command:
+        - "tensorboard"
+      args:
+        - "--logdir"
+        - "/tmp/logger"
+      volumeMounts:
+        - mountPath: /tmp/logger
+          name: log-volume
+      ports:
+        - containerPort: 6006
+  volumes:
+    - name: log-volume
+      emptyDir: {}
+
+
 ---
 apiVersion: v1
 kind: Service
