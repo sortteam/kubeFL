@@ -6,6 +6,7 @@ from flask import Flask, request
 from werkzeug import secure_filename
 import argparse
 import boto3
+from tensorboardX import SummaryWriter
 
 from requests import get  # to make GET request
 s3 = boto3.resource('s3')
@@ -74,11 +75,11 @@ def cal_mean_weight(weight_paths):
 @app.route('/upload', methods=['POST'])
 def upload():
     if request.method == 'POST':
+
         f = request.files.get('file')
         n_round = request.form['round']
         loss = request.form['loss']
         fname = secure_filename(f.filename)
-        print(fname)
         f.save(os.path.join('/tmp/models', fname))
 
         global updates
@@ -93,8 +94,19 @@ def upload():
             # This line for save temporary
             torch.save(new_weight, os.path.join('/tmp', str(n_round) + '.pt'))
             print(total_loss)
+
             with open("/tmp/loss.txt", "a") as f:
                 f.write(str(n_round) + ''.join('\t'+l for l in total_loss) + '\n')
+
+            graph = dict()
+            for i, _ in enumerate(range(len(updates))):
+                key = str(updates[i]).rsplit('-', 1)[0]
+                graph[key] = torch.tensor(float(total_loss[i]), dtype=torch.float32).item()
+            print(graph)
+
+            writer = SummaryWriter('/tmp/logger')
+            writer.add_scalars('devices', graph, int(n_round))
+            writer.close()
 
             updates = []
             total_loss = []
