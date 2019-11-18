@@ -5,6 +5,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import datasets, transforms
 
+######################################################
+# Change Model which you want to run on Mobile Device
+######################################################
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -22,6 +25,11 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+######################################################
+
+"""
+  calculate accuracy and create `/tmp/loss.txt` file every each rounds.
+"""
 
 if __name__ == '__main__':
     if os.path.exists('/tmp/acc.txt'):

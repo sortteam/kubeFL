@@ -1,4 +1,5 @@
 import os
+import argparse
 import matplotlib as mpl
 if os.environ.get('DISPLAY','') == '':
     print('no display found. Using non-interactive Agg backend')
@@ -41,5 +42,12 @@ def show_acc():
         plt.savefig('./acc.png')
         plt.show()
 
-# show_loss()
-# show_acc()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--show_loss', help='show loss', default=False)
+    parser.add_argument('--show_acc', help='show accuracy', default=False)
+    args, _ = parser.parse_known_args()
+    if args.show_loss:
+        show_loss()
+    if args.show_acc:
+        show_acc()

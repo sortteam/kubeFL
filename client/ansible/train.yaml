@@ -1,6 +1,6 @@
 - hosts: all
   vars:
-    web_model : "https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt"
+    web_model : "put your model url"
     model : "/tmp/init_model.pt"
 
   tasks:

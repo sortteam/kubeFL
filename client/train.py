@@ -16,6 +16,10 @@ import socket
 from datetime import datetime
 from requests import get  # to make GET request
 
+
+######################################################
+# Change Model which you want to run on Mobile Device
+######################################################
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -33,6 +37,7 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+######################################################
 
 def download(url, file_name):
     # Idempotency
@@ -125,10 +130,10 @@ if __name__ == '__main__':
     os.mkdir('./models')
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--web_model', help='init_model',
-                default='https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt')
+    parser.add_argument('--web_model', help='init_model')
     parser.add_argument('--model', help='path which will be downloaded', default='/tmp/init_model.pt')
-    parser.add_argument('--data_path', help='train data in ec2 mobile client', default='/tmp/data.pt')
+
+    parser.add_argument('--data_path', help='training data in ec2 mobile client', default='/tmp/data.pt')
     parser.add_argument('--lr', help='learning rate', default=0.01, type=float)
     parser.add_argument('--momentum', help='momentum', default=0.5, type=float)
     parser.add_argument('--epoch', help='number of epoch', default=50, type=int)

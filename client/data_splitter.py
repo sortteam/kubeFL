@@ -73,10 +73,16 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--n_label', help='number of label', default=10)
-    parser.add_argument('--bucket_name', help='bucket name', default='ywj-horovod')
-    parser.add_argument('--bucket_key', help='bucket key', default='torchmodels/model.pt')
+
+    # https://<bucket_name>.s3.<bucket_region>.amazonaws.com/<bucket_key>
+    parser.add_argument('--bucket_name', help='bucket name', required=True)
+    parser.add_argument('--bucket_key', help='bucket key', required=True)
+
+    # key path : i.e) ~/.ssh/test.key
     parser.add_argument('--key_path', help='private key path')
     parser.add_argument('--saved_dir', help='saved data folder', default='./data/')
+
+    # this init file was created by `./test/serializable_model.py`
     parser.add_argument('--init_model', help='init model to upload s3', default='./models/model.pt')
     parser.add_argument('--n_data', default=32,
                         help='number of data in one label which will send to clients')

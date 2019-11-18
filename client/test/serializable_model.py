@@ -2,6 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+######################################################
+# Change Model which you want to run on Mobile Device
+######################################################
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -19,6 +22,7 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+######################################################
 
 if __name__ == '__main__':
     model = Net()

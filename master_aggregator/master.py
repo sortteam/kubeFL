@@ -13,9 +13,10 @@ s3 = boto3.resource('s3')
 app = Flask(__name__)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--web_model', help='init_model',
-                default='https://ywj-horovod.s3.ap-northeast-2.amazonaws.com/torchmodels/model.pt')
+parser.add_argument('--web_model', help='init_model', default=None)
 parser.add_argument('--model', help='path which will be downloaded', default='/tmp/init_model.pt')
+parser.add_argument('--bucket_name', help='bucket name where wil be uploaded', required=True)
+parser.add_argument('--bucket_key', help='bucket key', required=True)
 parser.add_argument("--threshold", type=int, default=10)
 parser.add_argument("--lr", type=float, default=1.0)
 args = parser.parse_args()
@@ -65,7 +66,7 @@ def cal_mean_weight(weight_paths):
 
     torch.save(model, args.model) # overwrite
     data = open(args.model, 'rb')
-    s3.Bucket('ywj-horovod').put_object(Key='torchmodels/model.pt',
+    s3.Bucket(args.bucket_name).put_object(Key=args.bucket_key,
                                     Body=data, ACL='public-read')
 
     return model
@@ -112,9 +113,11 @@ if __name__ == '__main__':
     # Load init Model
     download(url=args.web_model, file_name=args.model)
 
+    # updated model will be saved in `/tmp/models`
     if not os.path.isdir('/tmp/models'):
         os.mkdir('/tmp/models')
 
+    # each devices loss file will saved on `/tmp/loss.txt`
     if os.path.exists('/tmp/loss.txt'):
         os.remove('/tmp/loss.txt')
 
