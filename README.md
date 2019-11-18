@@ -1,6 +1,6 @@
 ## kubeFL
 
-![](gif/FL.gif)
+<p align="center"><img src="gif/FL.gif"></img></p>
 
 kubefl is short for kubernetes with [Federated Learning](https://arxiv.org/abs/1610.05492) Simulator, a project that helps you handle Federated Learning in a Kubernetes infra environment. Like [Towards Federated Learning at Scale: System Design Paper(K Bonawitz et al)](https://arxiv.org/abs/1902.01046), The cycle is based on rounds, and each round consists of a **Client, Worker Aggregator, and Master Aggregator**.
 
