@@ -41,6 +41,7 @@ def upload():
         return 'success'
 
 if __name__ == '__main__':
+    # temporary model which will be passed worker aggregator
     if not os.path.isdir('/tmp/models'):
         os.mkdir('/tmp/models')
 

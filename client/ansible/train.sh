@@ -2,6 +2,7 @@
 round=${round}
 server=${server}
 epoch=${epoch}
+model=${model}
 
 while [ $# -gt 0 ]; do
    if [[ $1 == *"--"* ]]; then
@@ -34,4 +35,4 @@ ansible-playbook -i ./inventory/ec2.py \
       --limit "tag_type_client" \
       -u ubuntu \
       --private-key ~/.ssh/SoRT.pem train.yaml \
-      --extra-vars "round=$round server=$server epoch=$epoch"
+      --extra-vars "round=$round server=$server epoch=$epoch web_model=$model"

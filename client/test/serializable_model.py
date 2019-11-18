@@ -26,4 +26,4 @@ class Net(nn.Module):
 
 if __name__ == '__main__':
     model = Net()
-    torch.save(model.state_dict(), '../data/model.pt')
+    torch.save(model.state_dict(), '../models/model.pt')

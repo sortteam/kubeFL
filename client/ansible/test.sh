@@ -3,6 +3,7 @@ start=${s}
 end=${e}
 server=${server}
 epoch=${epoch}
+model=${model}
 
 while [ $# -gt 0 ]; do
    if [[ $1 == *"--"* ]]; then
@@ -36,5 +37,5 @@ fi
 SET=$(seq $start $end)
 for i in $SET
 do
-    ./train.sh $i $server $epoch
+    ./train.sh --round $i --server $server --epoch $epoch --model $model
 done

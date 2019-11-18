@@ -1,6 +1,5 @@
 - hosts: all
   vars:
-    web_model : "put your model url"
     model : "/tmp/init_model.pt"
 
   tasks:
